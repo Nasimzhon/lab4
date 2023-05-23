@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск самого частого слова в файле</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h1>Поиск самого частого слова в файле</h1>
+<form class="inputfield" action="/freq" enctype="multipart/form-data" method="post">
+    <p>Загрузите текстовый файл: </p>
+    <input type="file" name="file">
+    <input type="submit">
+</form>
+
+</body>
+</html>
