@@ -1,35 +1,23 @@
-from flask import Flask, render_template, request
-from collections import Counter
-
-app = Flask(__name__)
-
-
-def most_frequent_word(x):
-    f = Counter(x.replace('\n', ' ').replace('\r', ' ').split())
-    max_value = 0
-    max_word = ""
-    for word in f:
-        if max_value < f[word]:
-            max_value = f[word]
-            max_word = word
-
-    return max_word
+import unittest
+from app import app
+import io
 
 
-@app.route('/')
-@app.route('/index.htm')
-@app.route('/index.html')
-def index():
-    return render_template('index.html')
+class TestCase(unittest.TestCase):
+    def setUp(self):
+        self.app = app.test_client()
 
+    def test_eqwords(self):
+        resp = self.app.post('/freq', data={'file': (io.BytesIO(b"first second third"), 'test.txt')},
+                             content_type='multipart/form-data')
+        assert b'third' in resp.data
 
-@app.route('/freq', methods=['post'])
-def freq():
-    file = request.files['file']
-    file_data = ' '.join(x.decode('utf-8') for x in file.stream.readlines())
-    word = most_frequent_word(file_data)
-    return render_template('freq.html', freq_word=word)
+    def test_equalwords(self):
+        resp = self.app.post('/freq', data={'file': (io.BytesIO(b"first second third third first first third"),
+                                                     'test.txt')},
+                             content_type='multipart/form-data')
+        assert b'third' in resp.data
 
 
 if __name__ == "__main__":
-    app.run()
+    unittest.main()
